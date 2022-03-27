@@ -1,3 +1,4 @@
+#![allow(non_camel_case_types)]
 use rand::Rng;
 
 const DIGITS: u8 = 9;              // 1, 2, 3, 4, 5, 6, 7, 8, 9
@@ -256,14 +257,17 @@ fn random_chance(max: u8, precent: u8) -> bool {
     return choice < precent;
 }
 
-fn handle_cla() -> Result<(u8, u8, u8, u8), ()> {
+
+type void = ();
+
+fn handle_cla() -> Result<(u8, u8, u8, u8), void> {
     let args: Vec<String> = std::env::args().collect();
 
     // println!("{:?}", args);
     // assert!(args.len() >= 2, "Pass a number");
     if not!(args.len() >= 2) {
         println!("Enter a foure digit number as a commadn line argumen");
-        return Err(());
+        return Err(void);
     }
 
 
@@ -271,7 +275,7 @@ fn handle_cla() -> Result<(u8, u8, u8, u8), ()> {
     // assert_eq!(args[1].len(), 4, "arg should be 4 char long");
     if not!(args[1].len() == 4) {
         println!("Number should be 4 char long!");
-        return Err(());
+        return Err(void);
     }
     // println!("args[1] {:?}", args[1]);
 
@@ -287,11 +291,11 @@ fn handle_cla() -> Result<(u8, u8, u8, u8), ()> {
     // assert!(h <= 9 || s <= 9 || d <= 9 || e <= 9, "Some error !");
     if not!(h > 0 || s > 0 || d > 0 || e > 0) {
         println!("Numbers should be more than zero");
-        return Err(());
+        return Err(void);
     }
     if not!(h <= 9 || s <= 9 || d <= 9 || e <= 9) {
         println!("Numbers should be less than nine");
-        return Err(());
+        return Err(void);
     }
     return Ok((h as u8, s as u8, d as u8, e as u8));
 }
