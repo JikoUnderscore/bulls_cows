@@ -21,7 +21,7 @@ fn main() {
     for h in 1..=DIGITS {
         for s in 1..=DIGITS {
             for d in 1..=DIGITS {
-                for e in 1..=DIGITS {
+                for e in 1..=DIGITS     {
                     // println!("{}{}{}{}", h, s, d, e);
                     guesses[n] = Some((h, s, d, e));
                     n += 1;
@@ -84,67 +84,21 @@ fn compare_numbers(run: &mut bool, guess: (u8, u8, u8, u8), secret: (u8, u8, u8,
     let bull_cow = play_bull_cows(&guess, &secret);
 
     match bull_cow {
-        0 => {
-            witch[0] = false;
-            println!("0 0");
-        },
-        1 => {
-            witch[1] = false;
-            println!("0 1");
-        },
-        2 => {
-            witch[2] = false;
-            println!("0 2");
-        },
-        3 => {
-            witch[3] = false;
-            println!("0 3");
-        },
-        4 => {
-            witch[4] = false;
-            println!("0 4");
-        },
-        10 => {
-            witch[5] = false;
-            println!("1 0");
-        },
-        11 => {
-            witch[6] = false;
-            println!("1 1");
-        },
-        12 => {
-            witch[7] = false;
-            println!("1 2");
-        },
-        13 => {
-            witch[8] = false;
-            println!("1 3");
-        },
-        20 => {
-            witch[9] = false;
-            println!("2 0");
-        },
-        21 => {
-            witch[10] = false;
-            println!("2 1");
-        },
-        22 => {
-            witch[11] = false;
-            println!("2 2");
-        },
-        31 => {
-            witch[12] = false;
-            println!("3 1");
-        },
-        30 => {
-            witch[13] = false;
-            println!("3 0");
-        },
-        40 => {
-            witch[14] = false;
-            println!("4 0");
-            *run = false;
-        },
+        0 => {  witch[0] = false; println!("0 0"); },
+        1 => {  witch[1] = false; println!("0 1"); },
+        2 => {  witch[2] = false; println!("0 2"); },
+        3 => {  witch[3] = false; println!("0 3"); },
+        4 => {  witch[4] = false; println!("0 4"); },
+        10 => { witch[5] = false; println!("1 0"); },
+        11 => { witch[6] = false; println!("1 1"); },
+        12 => { witch[7] = false; println!("1 2"); },
+        13 => { witch[8] = false; println!("1 3"); },
+        20 => { witch[9] = false; println!("2 0"); },
+        21 => { witch[10] = false; println!("2 1"); },
+        22 => { witch[11] = false; println!("2 2"); },
+        31 => { witch[12] = false; println!("3 1"); },
+        30 => { witch[13] = false; println!("3 0"); },
+        40 => { witch[14] = false; println!("4 0"); *run = false;},
         _ => {}
     }
 
@@ -215,7 +169,7 @@ fn choose_number_gen(guesses: &[Option<(u8, u8, u8, u8)>; 6561], table: &mut [[u
     }
 
 
-    return guesses[numer_index as usize];
+    return guesses[numer_index];
 }
 
 fn play_bull_cows(guess: &(u8, u8, u8, u8), secret: &(u8, u8, u8, u8)) -> u8 {
@@ -235,16 +189,28 @@ fn play_bull_cows(guess: &(u8, u8, u8, u8), secret: &(u8, u8, u8, u8)) -> u8 {
         bulls += 1;
     }
 
-    if guess.0 != secret.0 && (guess.0 == secret.1 || guess.0 == secret.2 || guess.0 == secret.3) {
+    if guess.0 != secret.0 &&
+           (guess.0 == secret.1 ||
+            guess.0 == secret.2 ||
+            guess.0 == secret.3) {
         cows += 1;
     }
-    if guess.1 != secret.1 && (guess.1 == secret.0 || guess.1 == secret.2 || guess.1 == secret.3) {
+    if guess.1 != secret.1 &&
+           (guess.1 == secret.0 ||
+            guess.1 == secret.2 ||
+            guess.1 == secret.3) {
         cows += 1;
     }
-    if guess.2 != secret.2 && (guess.2 == secret.1 || guess.2 == secret.0 || guess.2 == secret.3) {
+    if guess.2 != secret.2 &&
+           (guess.2 == secret.1 ||
+            guess.2 == secret.0 ||
+            guess.2 == secret.3) {
         cows += 1;
     }
-    if guess.3 != secret.3 && (guess.3 == secret.0 || guess.3 == secret.1 || guess.3 == secret.2) {
+    if guess.3 != secret.3 &&
+           (guess.3 == secret.0 ||
+            guess.3 == secret.1 ||
+            guess.3 == secret.2) {
         cows += 1;
     }
 
@@ -259,8 +225,12 @@ fn random_chance(max: u8, precent: u8) -> bool {
 
 
 type void = ();
+#[allow(non_upper_case_globals)]
+const void: () = ();
+
 
 fn handle_cla() -> Result<(u8, u8, u8, u8), void> {
+
     let args: Vec<String> = std::env::args().collect();
 
     // println!("{:?}", args);
