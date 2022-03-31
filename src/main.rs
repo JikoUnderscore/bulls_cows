@@ -1,5 +1,6 @@
 #![allow(non_camel_case_types)]
-use rand::Rng;
+
+use std::collections::HashSet;
 
 const DIGITS: u8 = 9;              // 1, 2, 3, 4, 5, 6, 7, 8, 9
 // const DIGIT_POSISTIONS: u8 = 4; // ----
@@ -14,40 +15,34 @@ fn main() {
         Err(_) => { return; }
     };
 
-    let mut guesses = [Some((0, 0, 0, 0)); 6561]; // 6561 = (DIGITS pow DIGIT_POSISTIONS) as usize
-
-    let mut n = 0;
-
-    for h in 1..=DIGITS {
-        for s in 1..=DIGITS {
-            for d in 1..=DIGITS {
-                for e in 1..=DIGITS     {
-                    // println!("{}{}{}{}", h, s, d, e);
-                    guesses[n] = Some((h, s, d, e));
-                    n += 1;
+    let mut guesses = [Some((0, 0, 0, 0)); SIZE]; // 6561 = (DIGITS pow DIGIT_POSISTIONS) as usize
+    {
+        let mut n = 0;
+        for h in 1..=DIGITS {
+            for s in 1..=DIGITS {
+                for d in 1..=DIGITS {
+                    for e in 1..=DIGITS {
+                        // println!("{}{}{}{}", h, s, d, e);
+                        guesses[n] = Some((h, s, d, e));
+                        n += 1;
+                    }
                 }
             }
         }
     }
-
-    let mut table: [[u32; 15]; 6561] = [[0; 15]; 6561];
     let mut answare_index = 0;
     let mut chosen_number;
     let mut luup = 0;
 
     let mut run = true;
     while run {
-        chosen_number = choose_number_gen(&guesses, &mut table);
+        chosen_number = choose_number_gen(&guesses);
         println!("---------------------");
         println!("chosen_number {:?}", chosen_number);
         compare_numbers(&mut run, chosen_number.unwrap(), secret, &mut guesses);
         println!();
         answare_index = found_answare(&mut run, &guesses);
-        for (i, guess) in guesses.iter().enumerate() {
-            if let Some(gu) = guess {
-                println!("index: {}={:?},  {:?}", i, gu, table[i]);
-            }
-        }
+
 
 
         luup += 1;
@@ -130,12 +125,14 @@ fn compare_numbers(run: &mut bool, guess: (u8, u8, u8, u8), secret: (u8, u8, u8,
     }
 }
 
-fn choose_number_gen(guesses: &[Option<(u8, u8, u8, u8)>; 6561], table: &mut [[u32; 15]; 6561]) -> Option<(u8, u8, u8, u8)> {
+fn choose_number_gen(guesses: &[Option<(u8, u8, u8, u8)>; SIZE]) -> Option<(u8, u8, u8, u8)> {
+    let mut table: [[u32; 15]; SIZE] = [[0; 15]; SIZE];
+
+
     for (i, r) in guesses.iter().enumerate() {
         if let Some(r) = r {
             for l in guesses.iter().flatten() {
                 let bull_cow = play_bull_cows(r, l);
-
                 match bull_cow {
                     0 => table[i][0] += 1,
                     1 => table[i][1] += 1,
@@ -162,12 +159,21 @@ fn choose_number_gen(guesses: &[Option<(u8, u8, u8, u8)>; 6561], table: &mut [[u
     let mut numer_index = 0;
     for (i, a) in table.iter().enumerate() {
         let new_max = *a.iter().max().unwrap();
-        if guesses[i].is_some() && (new_max < m || new_max <= m && random_chance(100, 25)) {
+        if guesses[i].is_some() && (new_max < m) {
             m = new_max;
             numer_index = i;
         }
     }
 
+    let mut unic = HashSet::new();
+    for (i, guess) in guesses.iter().enumerate() {
+        if let Some(gu) = guess {
+            if not!(unic.contains(&table[i])) {
+                unic.insert(table[i]);
+                println!("index: {}={:?},  {:?}", i, gu, table[i]);
+            }
+        }
+    }
 
     return guesses[numer_index];
 }
@@ -216,11 +222,6 @@ fn play_bull_cows(guess: &(u8, u8, u8, u8), secret: &(u8, u8, u8, u8)) -> u8 {
 
 
     return bulls * 10 + cows;
-}
-
-fn random_chance(max: u8, precent: u8) -> bool {
-    let choice = rand::thread_rng().gen_range(0..max);
-    return choice < precent;
 }
 
 
