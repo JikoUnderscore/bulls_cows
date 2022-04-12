@@ -2,7 +2,7 @@
 
 use std::collections::HashSet;
 
-const DIGITS: u8 = 9;              // 1, 2, 3, 4, 5, 6, 7, 8, 9
+// const DIGITS: u8 = 9;              // 1, 2, 3, 4, 5, 6, 7, 8, 9
 // const DIGIT_POSISTIONS: u8 = 4; // ----
 const SIZE: usize = 6561;
 
@@ -15,34 +15,20 @@ fn main() {
         Err(_) => { return; }
     };
 
-    let mut guesses = [Some((0, 0, 0, 0)); SIZE]; // 6561 = (DIGITS pow DIGIT_POSISTIONS) as usize
-    {
-        let mut n = 0;
-        for h in 1..=DIGITS {
-            for s in 1..=DIGITS {
-                for d in 1..=DIGITS {
-                    for e in 1..=DIGITS {
-                        // println!("{}{}{}{}", h, s, d, e);
-                        guesses[n] = Some((h, s, d, e));
-                        n += 1;
-                    }
-                }
-            }
-        }
-    }
+    let mut guesses = make_array();
+
     let mut answare_index = 0;
     let mut chosen_number;
     let mut luup = 0;
 
     let mut run = true;
     while run {
-        chosen_number = choose_number_gen(&guesses);
         println!("---------------------");
-        println!("chosen_number {:?}", chosen_number);
+        chosen_number = choose_number_gen(&guesses);
+        println!("\nchosen_number {:?}", chosen_number);
         compare_numbers(&mut run, chosen_number.unwrap(), secret, &mut guesses);
         println!();
         answare_index = found_answare(&mut run, &guesses);
-
 
 
         luup += 1;
@@ -53,6 +39,36 @@ fn main() {
     println!("answare {:?}", guesses[answare_index]);
 }
 
+const fn make_array() -> [Option<(u8, u8, u8, u8)>; SIZE] {
+    const DIGITS: u8 = 9;
+    let mut arr = [None; SIZE];
+    let mut n = 0;
+
+    let mut h = 1;
+    let mut s;
+    let mut d;
+    let mut e;
+    while h <= DIGITS {
+        s = 1;
+        while s <= DIGITS {
+            d = 1;
+            while d <= DIGITS {
+                e = 1;
+                while e <= DIGITS {
+                    arr[n] = Some((h, s, d, e));
+                    n += 1;
+
+                    e += 1;
+                }
+                d += 1;
+            }
+            s += 1;
+        }
+        h += 1;
+    }
+
+    return arr;
+}
 
 fn found_answare(run: &mut bool, guesses: &[Option<(u8, u8, u8, u8)>; SIZE]) -> usize {
     let mut n = 0;
@@ -79,21 +95,67 @@ fn compare_numbers(run: &mut bool, guess: (u8, u8, u8, u8), secret: (u8, u8, u8,
     let bull_cow = play_bull_cows(&guess, &secret);
 
     match bull_cow {
-        0 => {  witch[0] = false; println!("0 0"); },
-        1 => {  witch[1] = false; println!("0 1"); },
-        2 => {  witch[2] = false; println!("0 2"); },
-        3 => {  witch[3] = false; println!("0 3"); },
-        4 => {  witch[4] = false; println!("0 4"); },
-        10 => { witch[5] = false; println!("1 0"); },
-        11 => { witch[6] = false; println!("1 1"); },
-        12 => { witch[7] = false; println!("1 2"); },
-        13 => { witch[8] = false; println!("1 3"); },
-        20 => { witch[9] = false; println!("2 0"); },
-        21 => { witch[10] = false; println!("2 1"); },
-        22 => { witch[11] = false; println!("2 2"); },
-        31 => { witch[12] = false; println!("3 1"); },
-        30 => { witch[13] = false; println!("3 0"); },
-        40 => { witch[14] = false; println!("4 0"); *run = false;},
+        0 => {
+            witch[0] = false;
+            println!("0 0");
+        },
+        1 => {
+            witch[1] = false;
+            println!("0 1");
+        },
+        2 => {
+            witch[2] = false;
+            println!("0 2");
+        },
+        3 => {
+            witch[3] = false;
+            println!("0 3");
+        },
+        4 => {
+            witch[4] = false;
+            println!("0 4");
+        },
+        10 => {
+            witch[5] = false;
+            println!("1 0");
+        },
+        11 => {
+            witch[6] = false;
+            println!("1 1");
+        },
+        12 => {
+            witch[7] = false;
+            println!("1 2");
+        },
+        13 => {
+            witch[8] = false;
+            println!("1 3");
+        },
+        20 => {
+            witch[9] = false;
+            println!("2 0");
+        },
+        21 => {
+            witch[10] = false;
+            println!("2 1");
+        },
+        22 => {
+            witch[11] = false;
+            println!("2 2");
+        },
+        31 => {
+            witch[12] = false;
+            println!("3 1");
+        },
+        30 => {
+            witch[13] = false;
+            println!("3 0");
+        },
+        40 => {
+            witch[14] = false;
+            println!("4 0");
+            *run = false;
+        },
         _ => {}
     }
 
@@ -174,6 +236,7 @@ fn choose_number_gen(guesses: &[Option<(u8, u8, u8, u8)>; SIZE]) -> Option<(u8, 
             }
         }
     }
+    assert_eq!(numer_index, SIZE);
 
     return guesses[numer_index];
 }
@@ -196,25 +259,25 @@ fn play_bull_cows(guess: &(u8, u8, u8, u8), secret: &(u8, u8, u8, u8)) -> u8 {
     }
 
     if guess.0 != secret.0 &&
-           (guess.0 == secret.1 ||
+        (guess.0 == secret.1 ||
             guess.0 == secret.2 ||
             guess.0 == secret.3) {
         cows += 1;
     }
     if guess.1 != secret.1 &&
-           (guess.1 == secret.0 ||
+        (guess.1 == secret.0 ||
             guess.1 == secret.2 ||
             guess.1 == secret.3) {
         cows += 1;
     }
     if guess.2 != secret.2 &&
-           (guess.2 == secret.1 ||
+        (guess.2 == secret.1 ||
             guess.2 == secret.0 ||
             guess.2 == secret.3) {
         cows += 1;
     }
     if guess.3 != secret.3 &&
-           (guess.3 == secret.0 ||
+        (guess.3 == secret.0 ||
             guess.3 == secret.1 ||
             guess.3 == secret.2) {
         cows += 1;
@@ -226,12 +289,12 @@ fn play_bull_cows(guess: &(u8, u8, u8, u8), secret: &(u8, u8, u8, u8)) -> u8 {
 
 
 type void = ();
+
 #[allow(non_upper_case_globals)]
 const void: () = ();
 
 
 fn handle_cla() -> Result<(u8, u8, u8, u8), void> {
-
     let args: Vec<String> = std::env::args().collect();
 
     // println!("{:?}", args);
